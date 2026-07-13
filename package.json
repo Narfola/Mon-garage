@@ -1,0 +1,23 @@
+{
+	"name": "mon-garage",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"install": "npm install --prefix client && npm install --prefix serveur",
+		"dev:client": "npm run dev --prefix client",
+		"dev:serveur": "npm run dev --prefix serveur",
+		"dev": "concurrently -k -p \"[{name}]\" -c \"cyan.bold,yellow.bold\" -n \"CLIENT,SERVEUR\" \"npm:dev:client\" \"npm:dev:serveur\"",
+		"lint": "biome check .",
+		"format": "biome format --write ."
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"type": "module",
+	"devDependencies": {
+		"@biomejs/biome": "2.5.3",
+		"concurrently": "^10.0.3"
+	}
+}
