@@ -9,8 +9,8 @@
 		"dev:client": "npm run dev --prefix client",
 		"dev:serveur": "npm run dev --prefix serveur",
 		"dev": "concurrently -k -p \"[{name}]\" -c \"cyan.bold,yellow.bold\" -n \"CLIENT,SERVEUR\" \"npm:dev:client\" \"npm:dev:serveur\"",
-		"check": "biome check .",
-		"format": "biome format --write ."
+		"check": "biome check --error-on-warnings --no-errors-on-unmatched --staged . && npm run check-types --workspaces --if-present",
+		"check:fix": "biome check --write --error-on-warnings --no-errors-on-unmatched --staged ."
 	},
 	"keywords": [],
 	"author": "",
