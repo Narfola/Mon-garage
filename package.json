@@ -9,7 +9,7 @@
 		"dev:client": "npm run dev --prefix client",
 		"dev:serveur": "npm run dev --prefix serveur",
 		"dev": "concurrently -k -p \"[{name}]\" -c \"cyan.bold,yellow.bold\" -n \"CLIENT,SERVEUR\" \"npm:dev:client\" \"npm:dev:serveur\"",
-		"lint": "biome check .",
+		"check": "biome check .",
 		"format": "biome format --write ."
 	},
 	"keywords": [],
