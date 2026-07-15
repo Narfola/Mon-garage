@@ -14,4 +14,5 @@ client
 			"Please check your database credentials in the .env file if you need a database access.",
 		);
 		console.warn(error.message);
+		process.exit(1);
 	});

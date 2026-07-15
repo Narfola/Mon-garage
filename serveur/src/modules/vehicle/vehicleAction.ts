@@ -3,6 +3,7 @@ import path from "node:path";
 import type { RequestHandler } from "express";
 import type { Rows } from "../../../database/client";
 import databaseClient from "../../../database/client";
+import type { MulterRequest } from "../../middleware/upload";
 import type {
 	CreateVehicleInput,
 	UpdateVehicleInput,
@@ -29,12 +30,16 @@ const readbyImmat: RequestHandler = async (req, res, next) => {
 	}
 };
 
-const create: RequestHandler = async (req, res, next) => {
+const create: RequestHandler = async (req: MulterRequest, res, next) => {
 	try {
+		if (!req.file) {
+			return res.status(400).json({ message: "Aucun fichier uploadé" });
+		}
+
 		const repository = new vehicleRepository();
 
 		const data: CreateVehicleInput = {
-			image: req.file ? req.file.filename : null,
+			image: req.file.filename,
 			brand: req.body.brand,
 			model: req.body.model,
 			immat: req.body.immat,
@@ -61,7 +66,7 @@ const create: RequestHandler = async (req, res, next) => {
 	}
 };
 
-const update: RequestHandler = async (req, res, next) => {
+const update: RequestHandler = async (req: MulterRequest, res, next) => {
 	try {
 		const repository = new vehicleRepository();
 		const id_vehicle = Number(req.params.id_vehicle);

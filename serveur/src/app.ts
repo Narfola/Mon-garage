@@ -1,6 +1,7 @@
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
+import router from "./router";
 
 const app = express();
 
@@ -9,8 +10,6 @@ if (process.env.CLIENT_URL != null) {
 }
 app.use(express.json());
 app.use(cookieParser());
-
-import router from "./router";
 
 app.use(router);
 // import fs from "node:fs";

@@ -1,6 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
+import type { Request } from "express";
 import multer from "multer";
+
+export interface MulterRequest extends Request {
+	file?: Express.Multer.File;
+}
 
 const uploadsDir = path.join(__dirname, "../../public/uploads/vehicle");
 
@@ -18,13 +23,29 @@ const storage = multer.diskStorage({
 	},
 });
 
+const fileFilter = (
+	_req: Request,
+	file: Express.Multer.File,
+	cb: multer.FileFilterCallback,
+) => {
+	const allowed = ["image/jpeg", "image/png", "image/webp"];
+	if (allowed.includes(file.mimetype)) {
+		cb(null, true);
+	} else {
+		cb(
+			new Error(
+				"Type de fichier non autorisé. Seuls les JPEG, PNG et WebP sont acceptés.",
+			),
+		);
+	}
+};
+
 export const upload = multer({
 	storage,
-	limits: { fileSize: 5 * 1024 * 1024 },
-	fileFilter: (_req, file, cb) => {
-		const allowed = ["image/jpeg", "image/png", "image/webp"];
-		cb(null, allowed.includes(file.mimetype));
+	limits: {
+		fileSize: 5 * 1024 * 1024,
 	},
+	fileFilter,
 });
 
 export default upload;
