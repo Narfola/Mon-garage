@@ -20,9 +20,12 @@ const readbyVehicleId: RequestHandler = async (req, res, next) => {
 const create: RequestHandler = async (req, res, next) => {
 	try {
 		const repository = new maintenanceRepository();
-
+		const date = new Date(req.body.maintenance_date);
+		if (Number.isNaN(date.getTime())) {
+			return res.status(400).json({ message: "Date de maintenance invalide" });
+		}
 		const data: CreateMaintenanceInput = {
-			maintenance_date: new Date(req.body.maintenance_date),
+			maintenance_date: date,
 			maintenance_km: Number(req.body.maintenance_km),
 			id_vehicle: Number(req.body.id_vehicle),
 		};
@@ -37,10 +40,13 @@ const create: RequestHandler = async (req, res, next) => {
 const update: RequestHandler = async (req, res, next) => {
 	try {
 		const repository = new maintenanceRepository();
-
+		const date = new Date(req.body.maintenance_date);
+		if (Number.isNaN(date.getTime())) {
+			return res.status(400).json({ message: "Date de maintenance invalide" });
+		}
 		const data: UpdateMaintenanceInput = {
 			id_maintenance: Number(req.params.id_maintenance),
-			maintenance_date: new Date(req.body.maintenance_date),
+			maintenance_date: date,
 			maintenance_km: Number(req.body.maintenance_km),
 		};
 
