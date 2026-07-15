@@ -1,6 +1,8 @@
+import { useNavigate } from "react-router";
 import "./Home.css";
 
 const Home: React.FC = () => {
+	const navigate = useNavigate();
 	return (
 		<div className="home-container">
 			<section className="hero-section">
@@ -13,7 +15,11 @@ const Home: React.FC = () => {
 						terrain.
 					</p>
 					<div className="hero-actions">
-						<button type="button" className="btn-primary">
+						<button
+							type="button"
+							className="btn-primary"
+							onClick={() => navigate("/login")}
+						>
 							COMMENCER
 						</button>
 					</div>

@@ -12,8 +12,8 @@
 		align-items: center;
 		justify-content: center;
 		background:
-			linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
-			url("../../assets/mon-garage-backgroung.png") no-repeat center center /
+			linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.6)),
+			url("../../assets/mon-garage-background.png") no-repeat center center /
 			cover;
 		padding: 0 10%;
 

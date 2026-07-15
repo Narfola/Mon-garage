@@ -1,0 +1,41 @@
+.navbar {
+	display: flex;
+	position: fixed;
+	align-items: center;
+	justify-content: space-between;
+	z-index: 100;
+	top: 0;
+	width: 100%;
+	padding: 1rem 3rem 0rem 3rem;
+	font-family: var(--font-body);
+	.nav-brand {
+		.nav-link-home {
+			font-family: var(--font-title);
+			text-decoration: none;
+			color: var(--tertiary-color);
+			font-size: 1.5rem;
+			display: flex;
+		}
+	}
+	.nav-menu {
+		position: absolute;
+		left: 50%;
+		right: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		.nav-link {
+			text-decoration: none;
+			font-size: 1.2rem;
+			color: var(--primary-color);
+		}
+	}
+	.nav-connect {
+		.nav-link-connect {
+			text-decoration: none;
+			font-size: 1.2rem;
+			color: var(--primary-color);
+		}
+	}
+}
