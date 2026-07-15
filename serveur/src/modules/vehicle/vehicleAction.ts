@@ -101,6 +101,7 @@ const update: RequestHandler = async (req: MulterRequest, res, next) => {
 
 		if (req.file && currentVehicle?.image) {
 			const oldImagePath = path.join(
+				__dirname,
 				"public/uploads/vehicle",
 				currentVehicle.image,
 			);
@@ -128,7 +129,11 @@ const deleteVehicle: RequestHandler = async (req, res, next) => {
 		const vehicle = result[0] as { image: string | null } | undefined;
 
 		if (vehicle?.image) {
-			const imagePath = path.join("public/uploads/vehicle", vehicle.image);
+			const imagePath = path.join(
+				__dirname,
+				"public/uploads/vehicle",
+				vehicle.image,
+			);
 			if (fs.existsSync(imagePath)) {
 				fs.unlinkSync(imagePath);
 			}
