@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import "./Login.css";
+import { useAuth } from "../../hooks/useAuth";
 
 function Login() {
 	const API_URL = import.meta.env.VITE_API_URL;
 	const navigate = useNavigate();
+	const { checkAuth } = useAuth();
 	const [isLogin, setIsLogin] = useState(true);
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -15,6 +17,7 @@ function Login() {
 	const togglePasswordVisibility = () => {
 		setShowPassword(!showPassword);
 	};
+
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setIsLoading(true);
@@ -28,6 +31,7 @@ function Login() {
 				headers: {
 					"Content-Type": "application/json",
 				},
+				credentials: "include",
 				body: JSON.stringify({ email, password }),
 			});
 
@@ -38,6 +42,7 @@ function Login() {
 			} else {
 				if (isLogin) {
 					setMessage(data.message);
+					await checkAuth();
 					navigate("/vehicle");
 				} else {
 					setMessage(data.message);

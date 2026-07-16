@@ -33,6 +33,9 @@
 	}
 	.nav-connect {
 		.nav-link-connect {
+			background: none;
+			border: none;
+			cursor: pointer;
 			text-decoration: none;
 			font-size: 1.2rem;
 			color: var(--primary-color);

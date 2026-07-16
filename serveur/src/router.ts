@@ -9,9 +9,10 @@ const router = express.Router();
 
 router.post("/register", userActions.register);
 router.post("/login", userActions.login);
+router.post("/logout", userActions.logout);
 
 router.get("/users", authenticateToken, userActions.browse);
-
+router.get("/users/me", authenticateToken, userActions.me);
 router.get(
 	"/vehicles/:id_user",
 	authenticateToken,
