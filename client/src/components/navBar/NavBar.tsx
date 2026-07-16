@@ -10,7 +10,7 @@ function NavBar() {
 				</NavLink>
 			</div>
 			<div className="nav-menu">
-				<NavLink to="/vehicules" className="nav-link">
+				<NavLink to="/vehicle" className="nav-link">
 					Véhicules
 				</NavLink>
 			</div>
