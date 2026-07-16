@@ -6,9 +6,9 @@ interface VehicleProps {
 	immat: string;
 	image: string;
 	onClick: () => void;
-	isSelected: boolean; // Nouvelle prop
+	isSelected: boolean;
 }
-
+const API_URL = import.meta.env.VITE_API_URL;
 const VehicleCard: React.FC<VehicleProps> = ({
 	brand,
 	model,
@@ -34,7 +34,7 @@ const VehicleCard: React.FC<VehicleProps> = ({
 			</div>
 			<div className="vehicle-card__image-container">
 				<img
-					src={image}
+					src={`${API_URL}${image}`}
 					alt={`${brand} ${model}`}
 					className="vehicle-card__image"
 				/>

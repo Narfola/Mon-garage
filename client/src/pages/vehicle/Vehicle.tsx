@@ -2,30 +2,21 @@ import { useEffect, useState } from "react";
 
 import VehicleCard from "../../components/vehicleCard/VehicleCard";
 import VehicleDetails from "../../components/vehicleDetails/VehicleDetails";
+import VehicleModal from "../../components/vehicleModal/VehicleModal";
 import { useAuth } from "../../hooks/useAuth";
+import type { VehicleType } from "../../hooks/vehiculeSercive";
+import { vehicleService } from "../../hooks/vehiculeSercive";
 
 import "./Vehicle.css";
 
-interface Vehicle {
-	id_vehicle: number;
-	image: string;
-	brand: string;
-	model: string;
-	immat: string;
-	mileage_km: number;
-	fuel_type: string;
-	transmission_type: string;
-	power: number;
-	maintenance_interval_km: number;
-	maintenance_interval_time: number;
-	id_user: number;
-}
-
 const Vehicle = () => {
 	const { user, isAuthenticated } = useAuth();
-	const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-	const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
+	const [vehicles, setVehicles] = useState<VehicleType[]>([]);
+	const [selectedVehicle, setSelectedVehicle] = useState<VehicleType | null>(
+		null,
+	);
 	const [loading, setLoading] = useState(true);
+	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	useEffect(() => {
 		const fetchVehicles = async () => {
@@ -51,14 +42,26 @@ const Vehicle = () => {
 	}, [isAuthenticated, user]);
 
 	if (!isAuthenticated) return <div className="loading">Chargement...</div>;
-
+	const handleAddVehicle = async (data: VehicleType) => {
+		try {
+			await vehicleService.createVehicle(data);
+			alert("Véhicule ajouté avec succès !");
+		} catch (error) {
+			console.error(error);
+			alert("Erreur lors de l'ajout.");
+		}
+	};
 	return (
 		<div className="vehicle-page">
 			<main className="vehicle-page__content">
 				<aside className="vehicle-page__sidebar">
 					<header className="vehicle-page__header">
-						<h1 className="vehicle-page__title">Inventaire Flotte</h1>
-						<button type="button" className="vehicle-page__add-btn">
+						<h1 className="vehicle-page__title">Votre Flotte</h1>
+						<button
+							type="button"
+							className="vehicle-page__add-btn"
+							onClick={() => setIsModalOpen(true)}
+						>
 							+ Ajouter
 						</button>
 					</header>
@@ -89,6 +92,12 @@ const Vehicle = () => {
 					)}
 				</section>
 			</main>
+			<VehicleModal
+				isOpen={isModalOpen}
+				onClose={() => setIsModalOpen(false)}
+				onSave={handleAddVehicle}
+				id_user={user?.id_user || 0}
+			/>
 		</div>
 	);
 };

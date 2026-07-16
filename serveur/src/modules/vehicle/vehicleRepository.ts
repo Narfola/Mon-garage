@@ -78,6 +78,7 @@ class vehicleRepository {
 	}
 
 	async update(data: UpdateVehicleInput) {
+		const imagePath = data.image ? `/uploads/vehicle/${data.image}` : null;
 		const query = `
 			UPDATE vehicles SET 
 				image = ?, brand = ?, model = ?, immat = ?, 
@@ -87,7 +88,7 @@ class vehicleRepository {
 			WHERE id_vehicle = ?`;
 
 		await databaseClient.query(query, [
-			data.image,
+			imagePath,
 			data.brand,
 			data.model,
 			data.immat,

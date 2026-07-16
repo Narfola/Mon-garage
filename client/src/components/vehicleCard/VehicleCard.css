@@ -54,7 +54,6 @@
 	border-color: var(--primary-color);
 	background: #2a2a2e;
 	box-shadow: 0 0 12px rgba(255, 107, 0, 0.2);
-	transform: scale(1.02);
 }
 
 .vehicle-card:focus-visible {
