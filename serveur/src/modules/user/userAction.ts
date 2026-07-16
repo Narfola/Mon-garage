@@ -1,10 +1,21 @@
 import "dotenv/config";
 import argon2 from "argon2";
-import type { RequestHandler } from "express";
+import type { Request, RequestHandler } from "express";
 import jwt from "jsonwebtoken";
 
 import { emailRegex, passwordRegex } from "../../utils/validation";
 import userRepository from "./userRepository";
+
+interface User {
+	id_user: number;
+	email: string;
+}
+
+declare module "express" {
+	interface Request {
+		user?: User;
+	}
+}
 
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
@@ -12,6 +23,7 @@ if (!JWT_SECRET) {
 		"ERREUR : La variable d'environnement JWT_SECRET est manquante dans le fichier .env",
 	);
 }
+
 const browse: RequestHandler = async (_req, res, next) => {
 	try {
 		const repository = new userRepository();
@@ -86,6 +98,8 @@ const login: RequestHandler = async (req, res, next) => {
 			httpOnly: true,
 			secure: process.env.NODE_ENV === "production",
 			maxAge: 24 * 60 * 60 * 1000,
+			path: "/",
+			sameSite: "lax",
 		});
 
 		res.json({ message: "Connexion réussie", user: { email: user.email } });
@@ -104,4 +118,27 @@ const deleteUser: RequestHandler = async (req, res, next) => {
 	}
 };
 
-export default { browse, register, login, deleteUser };
+const me: RequestHandler = (req: Request, res, next) => {
+	try {
+		if (!req.user) {
+			return res.status(401).json({ message: "Non connecté" });
+		}
+		res.json({ user: req.user });
+	} catch (error) {
+		next(error);
+	}
+};
+
+const logout: RequestHandler = (_req, res, next) => {
+	try {
+		res.clearCookie("token", {
+			path: "/",
+			sameSite: "lax",
+		});
+		res.json({ message: "Déconnexion réussie" });
+	} catch (error) {
+		next(error);
+	}
+};
+
+export default { browse, register, login, deleteUser, me, logout };
