@@ -7,6 +7,7 @@ interface VehicleModalProps {
 	onClose: () => void;
 	onSave: (vehicle: VehicleType, imageFile?: File) => Promise<void>;
 	initialData?: VehicleType;
+	onSuccess?: () => Promise<void>;
 	id_user: number;
 }
 
@@ -15,6 +16,7 @@ const VehicleModal: React.FC<VehicleModalProps> = ({
 	onClose,
 	onSave,
 	initialData,
+	onSuccess,
 	id_user,
 }) => {
 	const [formData, setFormData] = useState<VehicleType>({
@@ -86,6 +88,11 @@ const VehicleModal: React.FC<VehicleModalProps> = ({
 			};
 
 			await onSave(finalData, imageFile ?? undefined);
+
+			if (onSuccess) {
+				await onSuccess();
+			}
+
 			onClose();
 		} catch (error) {
 			console.error("Erreur lors de l'enregistrement:", error);
@@ -94,7 +101,6 @@ const VehicleModal: React.FC<VehicleModalProps> = ({
 			setIsLoading(false);
 		}
 	};
-
 	if (!isOpen) return null;
 
 	return (
@@ -187,7 +193,6 @@ const VehicleModal: React.FC<VehicleModalProps> = ({
 							<label htmlFor="power">Puissance</label>
 							<input
 								id="power"
-								type="number"
 								name="power"
 								value={formData.power || ""}
 								onChange={handleChange}
@@ -197,7 +202,6 @@ const VehicleModal: React.FC<VehicleModalProps> = ({
 							<label htmlFor="mileage_km">Kilométrage</label>
 							<input
 								id="mileage_km"
-								type="number"
 								name="mileage_km"
 								value={formData.mileage_km || ""}
 								onChange={handleChange}
@@ -209,7 +213,6 @@ const VehicleModal: React.FC<VehicleModalProps> = ({
 							</label>
 							<input
 								id="maintenance_interval_km"
-								type="number"
 								name="maintenance_interval_km"
 								value={formData.maintenance_interval_km || ""}
 								onChange={handleChange}
@@ -221,7 +224,6 @@ const VehicleModal: React.FC<VehicleModalProps> = ({
 							</label>
 							<input
 								id="maintenance_interval_time"
-								type="number"
 								name="maintenance_interval_time"
 								value={formData.maintenance_interval_time || ""}
 								onChange={handleChange}

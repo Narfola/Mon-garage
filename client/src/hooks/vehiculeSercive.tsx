@@ -96,4 +96,14 @@ export const vehicleService = {
 			throw new Error("Erreur lors de la mise à jour du véhicule");
 		return response.json();
 	},
+	deleteVehicle: async (id_vehicle: number): Promise<{ message: string }> => {
+		const response = await fetch(`${API_URL}/vehicles/${id_vehicle}`, {
+			method: "DELETE",
+			credentials: "include",
+		});
+
+		if (!response.ok)
+			throw new Error("Erreur lors de la suppression du véhicule");
+		return response.json();
+	},
 };

@@ -6,6 +6,7 @@ import "./VehicleDetails.css";
 
 interface VehicleDetailsProps {
 	vehicle: VehicleType;
+	onUpdate?: () => Promise<void>;
 }
 const formatDate = (dateString: string) => {
 	if (!dateString) return "";
@@ -21,8 +22,12 @@ const formatDate = (dateString: string) => {
 	return `${day}-${month}-${year}`;
 };
 const API_URL = import.meta.env.VITE_API_URL;
-const VehicleDetails: React.FC<VehicleDetailsProps> = ({ vehicle }) => {
+const VehicleDetails: React.FC<VehicleDetailsProps> = ({
+	vehicle,
+	onUpdate,
+}) => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
+
 	const handleSave = async (updatedData: VehicleType, imageFile?: File) => {
 		try {
 			if (!vehicle.id_vehicle) {
@@ -39,9 +44,38 @@ const VehicleDetails: React.FC<VehicleDetailsProps> = ({ vehicle }) => {
 			setIsModalOpen(false);
 
 			alert("Mise à jour réussie !");
+
+			if (onUpdate) {
+				await onUpdate();
+			}
 		} catch (error) {
 			console.error("Erreur lors de la mise à jour:", error);
 			alert("Une erreur est survenue lors de la mise à jour.");
+		}
+	};
+
+	const handleDelete = async () => {
+		if (!vehicle.id_vehicle) {
+			alert("Erreur : ID du véhicule non trouvé");
+			return;
+		}
+
+		const confirmed = window.confirm(
+			"Êtes-vous sûr de vouloir supprimer ce véhicule ? Cette action est irréversible.",
+		);
+
+		if (!confirmed) return;
+
+		try {
+			await vehicleService.deleteVehicle(vehicle.id_vehicle);
+			alert("Véhicule supprimé avec succès !");
+
+			if (onUpdate) {
+				await onUpdate();
+			}
+		} catch (error) {
+			console.error("Erreur lors de la suppression:", error);
+			alert("Une erreur est survenue lors de la suppression.");
 		}
 	};
 
@@ -59,10 +93,20 @@ const VehicleDetails: React.FC<VehicleDetailsProps> = ({ vehicle }) => {
 				<div className="vehicle-details__sidebar">
 					<button
 						type="button"
-						className="vehicle-details__btn-specs"
+						className="vehicle-details__btn"
 						onClick={() => setIsModalOpen(true)}
 					>
 						Modifier les spécifications
+					</button>
+					<button type="button" className="vehicle-details__btn">
+						Ajouter un entretien
+					</button>
+					<button
+						type="button"
+						className="vehicle-details__btn delete"
+						onClick={handleDelete}
+					>
+						Supprimer le véhicule
 					</button>
 				</div>
 			</div>

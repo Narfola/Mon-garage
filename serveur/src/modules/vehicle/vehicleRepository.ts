@@ -53,6 +53,7 @@ class vehicleRepository {
 	}
 
 	async create(data: CreateVehicleInput) {
+		const imagePath = data.image ? `/uploads/vehicle/${data.image}` : null;
 		const query = `
 			INSERT INTO vehicles (
 				image, brand, model, immat, first_immat_date, 
@@ -61,7 +62,7 @@ class vehicleRepository {
 			) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		`;
 		const [result] = await databaseClient.query(query, [
-			data.image,
+			imagePath,
 			data.brand,
 			data.model,
 			data.immat,
@@ -78,7 +79,14 @@ class vehicleRepository {
 	}
 
 	async update(data: UpdateVehicleInput) {
-		const imagePath = data.image ? `/uploads/vehicle/${data.image}` : null;
+		let imagePath = data.image ? `/uploads/vehicle/${data.image}` : null;
+		if (data.image) {
+			if (data.image.startsWith("/uploads/vehicle/")) {
+				imagePath = data.image;
+			} else {
+				imagePath = `/uploads/vehicle/${data.image}`;
+			}
+		}
 		const query = `
 			UPDATE vehicles SET 
 				image = ?, brand = ?, model = ?, immat = ?, 
