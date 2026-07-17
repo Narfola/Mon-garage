@@ -29,8 +29,8 @@ router.post(
 
 router.put(
 	"/vehicles/:id_vehicle",
-	authenticateToken,
 	upload.single("image"),
+	authenticateToken,
 	vehicleActions.update,
 );
 

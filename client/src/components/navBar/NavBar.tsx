@@ -9,6 +9,9 @@ function NavBar() {
 	const handleNavigation = () => {
 		navigate("/login");
 	};
+	const getVehicleLink = () => {
+		return isAuthenticated ? "/vehicle" : "/login";
+	};
 	return (
 		<nav className="navbar">
 			<div className="nav-brand">
@@ -17,7 +20,7 @@ function NavBar() {
 				</NavLink>
 			</div>
 			<div className="nav-menu">
-				<NavLink to="/vehicle" className="nav-link">
+				<NavLink to={getVehicleLink()} className="nav-link">
 					Véhicules
 				</NavLink>
 			</div>

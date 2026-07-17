@@ -1,13 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import type { Request } from "express";
 import multer from "multer";
 
-export interface MulterRequest extends Request {
-	file?: Express.Multer.File;
-}
-
-const uploadsDir = path.join("../../public/uploads/vehicle");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const uploadsDir = path.resolve(__dirname, "../../public/uploads/vehicle");
 
 if (!fs.existsSync(uploadsDir)) {
 	fs.mkdirSync(uploadsDir, { recursive: true });

@@ -1,14 +1,19 @@
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import type { RequestHandler } from "express";
 import type { Rows } from "../../../database/client";
 import databaseClient from "../../../database/client";
-import type { MulterRequest } from "../../middleware/upload";
 import type {
 	CreateVehicleInput,
 	UpdateVehicleInput,
 } from "./vehicleRepository";
 import vehicleRepository from "./vehicleRepository";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const uploadsBasePath = path.join(__dirname, "../../../public/");
 
 const readbyUserId: RequestHandler = async (req, res, next) => {
 	try {
@@ -30,10 +35,11 @@ const readbyImmat: RequestHandler = async (req, res, next) => {
 	}
 };
 
-const create: RequestHandler = async (req: MulterRequest, res, next) => {
+const create: RequestHandler = async (req, res, next) => {
 	try {
 		if (!req.file) {
-			return res.status(400).json({ message: "Aucun fichier uploadé" });
+			res.status(400).json({ message: "Aucun fichier uploadé" });
+			return;
 		}
 
 		const repository = new vehicleRepository();
@@ -66,7 +72,7 @@ const create: RequestHandler = async (req: MulterRequest, res, next) => {
 	}
 };
 
-const update: RequestHandler = async (req: MulterRequest, res, next) => {
+const update: RequestHandler = async (req, res, next) => {
 	try {
 		const repository = new vehicleRepository();
 		const id_vehicle = Number(req.params.id_vehicle);
@@ -100,11 +106,8 @@ const update: RequestHandler = async (req: MulterRequest, res, next) => {
 		};
 
 		if (req.file && currentVehicle?.image) {
-			const oldImagePath = path.join(
-				__dirname,
-				"public/uploads/vehicle",
-				currentVehicle.image,
-			);
+			const oldImagePath = path.join(uploadsBasePath, currentVehicle.image);
+
 			if (fs.existsSync(oldImagePath)) {
 				fs.unlinkSync(oldImagePath);
 			}
@@ -129,11 +132,8 @@ const deleteVehicle: RequestHandler = async (req, res, next) => {
 		const vehicle = result[0] as { image: string | null } | undefined;
 
 		if (vehicle?.image) {
-			const imagePath = path.join(
-				__dirname,
-				"public/uploads/vehicle",
-				vehicle.image,
-			);
+			const imagePath = path.join(uploadsBasePath, vehicle.image);
+
 			if (fs.existsSync(imagePath)) {
 				fs.unlinkSync(imagePath);
 			}
