@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-
+import Swal from "sweetalert2";
 import VehicleCard from "../../components/vehicleCard/VehicleCard";
 import VehicleDetails from "../../components/vehicleDetails/VehicleDetails";
 import VehicleModal from "../../components/vehicleModal/VehicleModal";
@@ -111,11 +111,11 @@ const Vehicle = () => {
 				onSave={async (data: VehicleType, imageFile?: File) => {
 					try {
 						await vehicleService.createVehicle(data, imageFile);
-						alert("Véhicule ajouté avec succès !");
+						Swal.fire("Succès", "Véhicule ajouté avec succès !", "success");
 						handleAddSuccess();
 					} catch (error) {
 						console.error(error);
-						alert("Erreur lors de l'ajout.");
+						Swal.fire("Erreur", "Erreur lors de l'ajout.", "error");
 					}
 				}}
 				id_user={user?.id_user || 0}

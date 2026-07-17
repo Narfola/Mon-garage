@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 import type { VehicleType } from "../../hooks/vehiculeSercive";
 import "./VehicleModal.css";
 
@@ -96,7 +97,11 @@ const VehicleModal: React.FC<VehicleModalProps> = ({
 			onClose();
 		} catch (error) {
 			console.error("Erreur lors de l'enregistrement:", error);
-			alert("Une erreur est survenue lors de l'enregistrement.");
+			Swal.fire(
+				"Erreur",
+				"Une erreur est survenue lors de l'enregistrement.",
+				"error",
+			);
 		} finally {
 			setIsLoading(false);
 		}

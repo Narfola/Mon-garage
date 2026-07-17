@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Swal from "sweetalert2";
 import type { VehicleType } from "../../hooks/vehiculeSercive";
 import { vehicleService } from "../../hooks/vehiculeSercive";
 import VehicleModal from "../vehicleModal/VehicleModal";
@@ -31,7 +32,7 @@ const VehicleDetails: React.FC<VehicleDetailsProps> = ({
 	const handleSave = async (updatedData: VehicleType, imageFile?: File) => {
 		try {
 			if (!vehicle.id_vehicle) {
-				alert("Erreur : ID du véhicule non trouvé");
+				Swal.fire("Erreur", "ID du véhicule non trouvé", "error");
 				return;
 			}
 
@@ -43,39 +44,54 @@ const VehicleDetails: React.FC<VehicleDetailsProps> = ({
 
 			setIsModalOpen(false);
 
-			alert("Mise à jour réussie !");
+			Swal.fire("Succès", "Mise à jour réussie !", "success");
 
 			if (onUpdate) {
 				await onUpdate();
 			}
 		} catch (error) {
 			console.error("Erreur lors de la mise à jour:", error);
-			alert("Une erreur est survenue lors de la mise à jour.");
+			Swal.fire(
+				"Erreur",
+				"Une erreur est survenue lors de la mise à jour.",
+				"error",
+			);
 		}
 	};
 
 	const handleDelete = async () => {
 		if (!vehicle.id_vehicle) {
-			alert("Erreur : ID du véhicule non trouvé");
+			Swal.fire("Erreur", "ID du véhicule non trouvé", "error");
 			return;
 		}
 
-		const confirmed = window.confirm(
-			"Êtes-vous sûr de vouloir supprimer ce véhicule ? Cette action est irréversible.",
-		);
+		const result = await Swal.fire({
+			title: "Êtes-vous sûr ?",
+			text: "Êtes-vous sûr de vouloir supprimer ce véhicule ? Cette action est irréversible.",
+			icon: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#3085d6",
+			cancelButtonColor: "#d33",
+			confirmButtonText: "Oui, supprimer !",
+			cancelButtonText: "Non, annuler",
+		});
 
-		if (!confirmed) return;
+		if (!result.isConfirmed) return;
 
 		try {
 			await vehicleService.deleteVehicle(vehicle.id_vehicle);
-			alert("Véhicule supprimé avec succès !");
+			Swal.fire("Succès", "Véhicule supprimé avec succès !", "success");
 
 			if (onUpdate) {
 				await onUpdate();
 			}
 		} catch (error) {
 			console.error("Erreur lors de la suppression:", error);
-			alert("Une erreur est survenue lors de la suppression.");
+			Swal.fire(
+				"Erreur",
+				"Une erreur est survenue lors de la suppression.",
+				"error",
+			);
 		}
 	};
 
