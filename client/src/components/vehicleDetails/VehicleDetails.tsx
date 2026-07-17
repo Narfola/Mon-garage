@@ -1,7 +1,10 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
+import { maintenanceService } from "../../hooks/maintenanceService";
 import type { VehicleType } from "../../hooks/vehiculeSercive";
 import { vehicleService } from "../../hooks/vehiculeSercive";
+import MaintenanceGrid from "../maintenanceGrid/MaintenanceGrid";
+import MaintenanceModal from "../maintenanceModal/MaintenanceModal";
 import VehicleModal from "../vehicleModal/VehicleModal";
 import "./VehicleDetails.css";
 
@@ -9,6 +12,7 @@ interface VehicleDetailsProps {
 	vehicle: VehicleType;
 	onUpdate?: () => Promise<void>;
 }
+
 const formatDate = (dateString: string) => {
 	if (!dateString) return "";
 
@@ -22,12 +26,24 @@ const formatDate = (dateString: string) => {
 
 	return `${day}-${month}-${year}`;
 };
+
 const API_URL = import.meta.env.VITE_API_URL;
+
 const VehicleDetails: React.FC<VehicleDetailsProps> = ({
 	vehicle,
 	onUpdate,
 }) => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [isMaintenanceModalOpen, setIsMaintenanceModalOpen] = useState(false);
+
+	const [refreshKey, setRefreshKey] = useState(0);
+
+	const refreshData = async () => {
+		if (onUpdate) {
+			await onUpdate();
+		}
+		setRefreshKey((prev) => prev + 1);
+	};
 
 	const handleSave = async (updatedData: VehicleType, imageFile?: File) => {
 		try {
@@ -46,9 +62,7 @@ const VehicleDetails: React.FC<VehicleDetailsProps> = ({
 
 			Swal.fire("Succès", "Mise à jour réussie !", "success");
 
-			if (onUpdate) {
-				await onUpdate();
-			}
+			await refreshData();
 		} catch (error) {
 			console.error("Erreur lors de la mise à jour:", error);
 			Swal.fire(
@@ -56,6 +70,23 @@ const VehicleDetails: React.FC<VehicleDetailsProps> = ({
 				"Une erreur est survenue lors de la mise à jour.",
 				"error",
 			);
+		}
+	};
+
+	const handleSaveMaintenance = async (data: {
+		maintenance_date: string;
+		maintenance_km: number;
+		id_vehicle: number;
+	}) => {
+		try {
+			await maintenanceService.createMaintenance(data);
+			setIsMaintenanceModalOpen(false);
+			Swal.fire("Succès", "Entretien ajouté avec succès !", "success");
+
+			await refreshData();
+		} catch (error) {
+			console.error("Erreur lors de l'ajout de l'entretien:", error);
+			Swal.fire("Erreur", "Une erreur est survenue lors de l'ajout.", "error");
 		}
 	};
 
@@ -82,9 +113,7 @@ const VehicleDetails: React.FC<VehicleDetailsProps> = ({
 			await vehicleService.deleteVehicle(vehicle.id_vehicle);
 			Swal.fire("Succès", "Véhicule supprimé avec succès !", "success");
 
-			if (onUpdate) {
-				await onUpdate();
-			}
+			await refreshData();
 		} catch (error) {
 			console.error("Erreur lors de la suppression:", error);
 			Swal.fire(
@@ -114,7 +143,11 @@ const VehicleDetails: React.FC<VehicleDetailsProps> = ({
 					>
 						Modifier les spécifications
 					</button>
-					<button type="button" className="vehicle-details__btn">
+					<button
+						type="button"
+						className="vehicle-details__btn"
+						onClick={() => setIsMaintenanceModalOpen(true)}
+					>
 						Ajouter un entretien
 					</button>
 					<button
@@ -190,12 +223,25 @@ const VehicleDetails: React.FC<VehicleDetailsProps> = ({
 					</div>
 				</div>
 			</div>
+
+			<MaintenanceGrid
+				key={refreshKey}
+				id_vehicle={vehicle.id_vehicle || null}
+				onRefresh={refreshData}
+			/>
+
 			<VehicleModal
 				isOpen={isModalOpen}
 				onClose={() => setIsModalOpen(false)}
 				initialData={vehicle}
 				id_user={vehicle.id_user ?? 0}
 				onSave={handleSave}
+			/>
+			<MaintenanceModal
+				isOpen={isMaintenanceModalOpen}
+				onClose={() => setIsMaintenanceModalOpen(false)}
+				id_vehicle={vehicle.id_vehicle || null}
+				onSave={handleSaveMaintenance}
 			/>
 		</div>
 	);

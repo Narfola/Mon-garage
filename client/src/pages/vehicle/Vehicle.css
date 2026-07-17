@@ -60,7 +60,6 @@
 		padding: 20px;
 		overflow-y: auto;
 		border: 1px solid #222;
-
 		.vehicle-page__empty {
 			height: 100%;
 			display: flex;
@@ -70,5 +69,12 @@
 			border: 2px dashed #333;
 			border-radius: 12px;
 		}
+	}
+	.vehicle-page__main::-webkit-scrollbar {
+		width: 6px;
+	}
+	.vehicle-page__main::-webkit-scrollbar-thumb {
+		background: #333;
+		border-radius: 10px;
 	}
 }
