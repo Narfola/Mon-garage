@@ -7,6 +7,7 @@ import MaintenanceGrid from "../maintenanceGrid/MaintenanceGrid";
 import MaintenanceModal from "../maintenanceModal/MaintenanceModal";
 import VehicleModal from "../vehicleModal/VehicleModal";
 import "./VehicleDetails.css";
+import type { MaintenanceType } from "../../hooks/maintenanceService";
 
 interface VehicleDetailsProps {
 	vehicle: VehicleType;
@@ -35,8 +36,12 @@ const VehicleDetails: React.FC<VehicleDetailsProps> = ({
 }) => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [isMaintenanceModalOpen, setIsMaintenanceModalOpen] = useState(false);
-
 	const [refreshKey, setRefreshKey] = useState(0);
+
+	const [selectedMaintenance, setSelectedMaintenance] = useState<
+		MaintenanceType | undefined
+	>(undefined);
+	const [modalType, setModalType] = useState<"add" | "edit" | "delete">("add");
 
 	const refreshData = async () => {
 		if (onUpdate) {
@@ -79,15 +84,50 @@ const VehicleDetails: React.FC<VehicleDetailsProps> = ({
 		id_vehicle: number;
 	}) => {
 		try {
-			await maintenanceService.createMaintenance(data);
-			setIsMaintenanceModalOpen(false);
-			Swal.fire("Succès", "Entretien ajouté avec succès !", "success");
+			if (
+				modalType === "delete" &&
+				selectedMaintenance?.id_maintenance !== undefined
+			) {
+				await maintenanceService.deleteMaintenance(
+					selectedMaintenance.id_maintenance,
+				);
+				Swal.fire("Succès", "Entretien supprimé avec succès !", "success");
+			} else if (
+				modalType === "edit" &&
+				selectedMaintenance?.id_maintenance !== undefined
+			) {
+				await maintenanceService.updateMaintenance(
+					selectedMaintenance.id_maintenance,
+					{
+						maintenance_date: data.maintenance_date,
+						maintenance_km: data.maintenance_km,
+					},
+				);
+				Swal.fire("Succès", "Entretien mis à jour avec succès !", "success");
+			} else {
+				await maintenanceService.createMaintenance(data);
+				Swal.fire("Succès", "Entretien ajouté avec succès !", "success");
+			}
 
+			setIsMaintenanceModalOpen(false);
+			setSelectedMaintenance(undefined);
 			await refreshData();
 		} catch (error) {
-			console.error("Erreur lors de l'ajout de l'entretien:", error);
-			Swal.fire("Erreur", "Une erreur est survenue lors de l'ajout.", "error");
+			console.error("Erreur lors de la maintenance:", error);
+			Swal.fire("Erreur", "Une erreur est survenue.", "error");
 		}
+	};
+
+	const handleOpenEdit = (m: MaintenanceType) => {
+		setSelectedMaintenance(m);
+		setModalType("edit");
+		setIsMaintenanceModalOpen(true);
+	};
+
+	const handleOpenDelete = (m: MaintenanceType) => {
+		setSelectedMaintenance(m);
+		setModalType("delete");
+		setIsMaintenanceModalOpen(true);
 	};
 
 	const handleDelete = async () => {
@@ -146,7 +186,10 @@ const VehicleDetails: React.FC<VehicleDetailsProps> = ({
 					<button
 						type="button"
 						className="vehicle-details__btn"
-						onClick={() => setIsMaintenanceModalOpen(true)}
+						onClick={() => {
+							setModalType("add");
+							setIsMaintenanceModalOpen(true);
+						}}
 					>
 						Ajouter un entretien
 					</button>
@@ -227,7 +270,8 @@ const VehicleDetails: React.FC<VehicleDetailsProps> = ({
 			<MaintenanceGrid
 				key={refreshKey}
 				id_vehicle={vehicle.id_vehicle || null}
-				onRefresh={refreshData}
+				onEdit={handleOpenEdit}
+				onDelete={handleOpenDelete}
 			/>
 
 			<VehicleModal
@@ -242,6 +286,8 @@ const VehicleDetails: React.FC<VehicleDetailsProps> = ({
 				onClose={() => setIsMaintenanceModalOpen(false)}
 				id_vehicle={vehicle.id_vehicle || null}
 				onSave={handleSaveMaintenance}
+				initialData={selectedMaintenance}
+				modalType={modalType}
 			/>
 		</div>
 	);

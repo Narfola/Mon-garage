@@ -14,6 +14,7 @@ interface MaintenanceModalProps {
 	initialData?: MaintenanceType;
 	onSuccess?: () => Promise<void>;
 	id_vehicle: number | null;
+	modalType?: "add" | "edit" | "delete";
 }
 
 const MaintenanceModal: React.FC<MaintenanceModalProps> = ({
@@ -23,6 +24,7 @@ const MaintenanceModal: React.FC<MaintenanceModalProps> = ({
 	initialData,
 	onSuccess,
 	id_vehicle,
+	modalType,
 }) => {
 	const [formData, setFormData] = useState({
 		maintenance_date: "" as string,
@@ -94,49 +96,78 @@ const MaintenanceModal: React.FC<MaintenanceModalProps> = ({
 		<div className="modal-overlay">
 			<div className="modal-container">
 				<div className="modal-header">
-					<h2>
-						{initialData ? "Modifier l'entretien" : "Ajouter un entretien"}
+					<h2 className="modal-header__title">
+						{modalType === "delete"
+							? "Supprimer l'entretien"
+							: initialData
+								? "Modifier l'entretien"
+								: "Ajouter un entretien"}
 					</h2>
 					<button type="button" className="close-button" onClick={onClose}>
 						&times;
 					</button>
 				</div>
 
-				<form className="modal-body" onSubmit={handleSubmit}>
-					<div className="form-grid">
-						<div className="form-group">
-							<label htmlFor="maintenance_date">Date de l'entretien</label>
-							<input
-								id="maintenance_date"
-								type="date"
-								name="maintenance_date"
-								value={formData.maintenance_date}
-								onChange={handleChange}
-								required
-							/>
+				<div className="modal-body">
+					{modalType === "delete" ? (
+						<div className="modal-delete">
+							<p>
+								Êtes-vous sûr de vouloir supprimer cet entretien ? Cette action
+								est irréversible.
+							</p>
+							<button
+								type="button"
+								className="btn-delete"
+								onClick={() =>
+									onSave({
+										maintenance_date: "",
+										maintenance_km: 0,
+										id_vehicle: 0,
+									})
+								}
+								disabled={isLoading}
+							>
+								{isLoading ? "Suppression..." : "Confirmer la suppression"}
+							</button>
 						</div>
-						<div className="form-group">
-							<label htmlFor="maintenance_km">Kilométrage</label>
-							<input
-								id="maintenance_km"
-								name="maintenance_km"
-								placeholder="Ex: 35000"
-								value={formData.maintenance_km ?? ""}
-								onChange={handleChange}
-								required
-							/>
-						</div>
-					</div>
+					) : (
+						<form onSubmit={handleSubmit}>
+							<div className="form-grid">
+								<div className="form-group">
+									<label htmlFor="maintenance_date">Date de l'entretien</label>
+									<input
+										id="maintenance_date"
+										type="date"
+										name="maintenance_date"
+										value={formData.maintenance_date}
+										onChange={handleChange}
+										required
+									/>
+								</div>
+								<div className="form-group">
+									<label htmlFor="maintenance_km">Kilométrage</label>
+									<input
+										id="maintenance_km"
+										name="maintenance_km"
+										placeholder="Ex: 35000"
+										value={formData.maintenance_km ?? ""}
+										onChange={handleChange}
+										required
+									/>
+								</div>
+							</div>
 
-					<div className="modal-footer">
-						<button type="button" className="btn-cancel" onClick={onClose}>
-							Annuler
-						</button>
-						<button type="submit" className="btn-save" disabled={isLoading}>
-							{isLoading ? "Enregistrement..." : "Enregistrer"}
-						</button>
-					</div>
-				</form>
+							<div className="modal-footer">
+								<button type="button" className="btn-cancel" onClick={onClose}>
+									Annuler
+								</button>
+								<button type="submit" className="btn-save" disabled={isLoading}>
+									{isLoading ? "Enregistrement..." : "Enregistrer"}
+								</button>
+							</div>
+						</form>
+					)}
+				</div>
 			</div>
 		</div>
 	);

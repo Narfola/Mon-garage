@@ -80,6 +80,27 @@
 					}
 				}
 			}
+			.modal-delete {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				gap: 20px;
+				.btn-delete {
+					width: 50%;
+					background: transparent;
+					border: 1px solid #444;
+					color: white;
+					padding: 12px 12px;
+					border-radius: 6px;
+					font-size: 0.8rem;
+					cursor: pointer;
+					transition: all 0.2s;
+					&:hover {
+						background: var(--primary-color);
+						border-color: var(--primary-color);
+					}
+				}
+			}
 		}
 
 		.modal-footer {

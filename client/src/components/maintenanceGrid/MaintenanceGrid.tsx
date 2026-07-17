@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
-import Swal from "sweetalert2";
 import type { MaintenanceType } from "../../hooks/maintenanceService";
 import { maintenanceService } from "../../hooks/maintenanceService";
 import "./MaintenanceGrid.css";
 
 interface MaintenanceGridProps {
 	id_vehicle: number | null;
-	onRefresh?: () => void;
+	onEdit: (m: MaintenanceType) => void;
+	onDelete: (m: MaintenanceType) => void;
 }
 
 const formatDate = (dateString: string) => {
@@ -23,7 +23,11 @@ const formatDate = (dateString: string) => {
 	return `${day}-${month}-${year}`;
 };
 
-const MaintenanceGrid = ({ id_vehicle, onRefresh }: MaintenanceGridProps) => {
+const MaintenanceGrid = ({
+	id_vehicle,
+	onEdit,
+	onDelete,
+}: MaintenanceGridProps) => {
 	const [maintenances, setMaintenances] = useState<MaintenanceType[]>([]);
 	const [loading, setLoading] = useState(false);
 
@@ -45,17 +49,6 @@ const MaintenanceGrid = ({ id_vehicle, onRefresh }: MaintenanceGridProps) => {
 	useEffect(() => {
 		fetchMaintenances();
 	}, [fetchMaintenances]);
-
-	const handleDelete = async (id: number) => {
-		if (!confirm("Êtes-vous sûr de vouloir supprimer cet entretien ?")) return;
-		try {
-			await maintenanceService.deleteMaintenance(id);
-			if (onRefresh) onRefresh();
-		} catch (error) {
-			console.error("Erreur lors de la suppression:", error);
-			Swal.fire("Erreur", "Impossible de supprimer l'entretien.", "error");
-		}
-	};
 
 	if (!id_vehicle) return null;
 
@@ -88,6 +81,7 @@ const MaintenanceGrid = ({ id_vehicle, onRefresh }: MaintenanceGridProps) => {
 										<button
 											type="button"
 											className="maintenance-grid__btn-edit"
+											onClick={() => onEdit(m)}
 										>
 											Modifier entretien
 										</button>
@@ -97,8 +91,7 @@ const MaintenanceGrid = ({ id_vehicle, onRefresh }: MaintenanceGridProps) => {
 											type="button"
 											className="maintenance-grid__btn-delete"
 											onClick={() =>
-												m.id_maintenance !== undefined &&
-												handleDelete(m.id_maintenance)
+												m.id_maintenance !== undefined && onDelete(m)
 											}
 										>
 											Supprimer entretien
